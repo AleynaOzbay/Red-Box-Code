@@ -1,0 +1,152 @@
+#include <projevol3.h>
+#include <math.h> 
+#include <stdio.h> 
+#include <stdlib.h> 
+#fuses XT,NOWDT,NOBROWNOUT,NOLVP,NOPUT,NOWRT
+#use delay (clock=4000000)
+#use fast_io(a)
+#use rs232 (baud=9600,xmit=pin_c6,rcv=pin_c7,parity=N,sto   p=1)
+#define use_portb_lcd TRUE
+#include <lcd.c>
+
+
+void main() 
+{
+    delay_ms(100);
+
+
+   setup_timer_1(T1_DISABLED);     // T1 zamanlayıcısı devre dışı
+   setup_timer_2(T2_DISABLED,0,1); // T2 zamanlayıcısı devre dışı
+   setup_CCP1(CCP_OFF);            // CCP1 birimi devre dışı
+   setup_CCP2(CCP_OFF);            // CCP2 birimi devre dışı
+   
+   enable_interrupts(global);
+   enable_interrupts(INT_RDA);
+   enable_interrupts(INT_TBE);
+   set_tris_a(0x00);
+   set_tris_e(0x00);
+  
+    lcd_init();  
+      int8 komut;
+      int8 A1=0;
+      int8 A2=0;
+      int8 E1=0;
+      int8 E0=0;
+      printf(lcd_putc,"\fBaglanti \nBekleniyor...\n");
+      delay_us(10);
+       
+  
+   while(TRUE)
+   {  
+
+    BASLA:
+   
+   if(kbhit())
+   {
+          komut=getc();
+          delay_us(10);    
+        
+          if(komut==1)
+       {
+         if(A1==1)
+         {
+            output_low(pin_a1);
+            A1=0;
+             printf(lcd_putc,"\fPriz 1 Kapali.\n");
+            goto BASLA;
+         }
+         else if(A1==0)
+         {
+            output_high(pin_a1);
+            A1=1;
+             printf(lcd_putc,"\fPriz 1 Acik.\n");
+            goto BASLA;
+         }
+       }
+      else if(komut==2)
+      {
+         if(A2==1)
+         {
+            output_low(pin_a2);
+            A2=0;
+            printf(lcd_putc,"\fPriz 2 Kapali.\n");
+            goto BASLA;
+         }
+         else if(A2==0)
+         {
+            output_high(pin_a2);
+            A2=1;
+            printf(lcd_putc,"\fPriz 2 Acik.\n");
+            goto BASLA;
+         }
+      }
+      else if(komut==3)
+      {
+         if(E0==1)
+         {
+            output_low(pin_e0);
+            E0=0;
+             printf(lcd_putc,"\fPriz 3 Kapali.\n");
+            goto BASLA;
+         }
+         else if(E0==0)
+         {
+            output_high(pin_e0);
+            E0=1;
+             printf(lcd_putc,"\fPriz 3 Acik.\n");
+            goto BASLA;
+         }
+      }
+      else if(komut==4)
+      {
+             if(E1==1)
+         {
+            output_low(pin_e1);
+            E1=0;
+            printf(lcd_putc,"\fPriz 4 Kapali.\n");
+            goto BASLA;
+         }
+      else if(E1==0)
+         {
+            output_high(pin_e1);
+            E1=1;
+            printf(lcd_putc,"\fPriz 4 Acik.\n");
+            goto BASLA;
+         }
+      
+      }
+         else if(komut==5)
+      {
+         output_high(pin_a1);
+         output_high(pin_a2);
+         output_high(pin_e0);
+         output_high(pin_e1);
+         printf(lcd_putc,"\fTum Prizler Acik.\n");
+         A1 = 1;
+         A2 = 1;
+         E0 = 1;
+         E1 = 1;
+         goto BASLA;
+      }
+      else if(komut == 6)
+      {
+         output_low(pin_a1);
+         output_low(pin_a2);
+         output_low(pin_e0);
+         output_low(pin_e1);
+         printf(lcd_putc,"\fTum Prizler Kapali.\n");
+         A1 = 0;
+         A2 = 0;
+         E0 = 0;
+         E1 = 0;
+         goto BASLA;
+      }
+      else
+      {
+         goto BASLA;
+      }
+       
+   }
+   }
+  
+   }
